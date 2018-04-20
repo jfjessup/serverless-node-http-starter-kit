@@ -1,0 +1,53 @@
+{
+  "name": "serverless-http-starter-kit",
+  "version": "1.0.0",
+  "description": "A slightly opinionated starter kit for building serverless APIs.",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf .webpack/ .serverless/",
+    "test": "echo \"test harness is not prodived :(\" && exit 1",
+    "start": "sls offline start -r <aws-region> -s alpha --acct <account-alias>",
+    "deploy:<environment>": "sls deploy -v -r <aws-region>-s <environment> --acct <account-alias>"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jfjessup/serverless-http-starter-kit.git"
+  },
+  "keywords": [
+    "AWS",
+    "Serverless",
+    "Typescript"
+  ],
+  "author": "James Jessup",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jfjessup/serverless-http-starter-kit/issues"
+  },
+  "homepage": "https://github.com/jfjessup/serverless-http-starter-kit#readme",
+  "devDependencies": {
+    "@types/bluebird": "^3.5.4",
+    "@types/lodash": "^4.14.68",
+    "@types/moment": "^2.13.0",
+    "@types/node": "^7.0.22",
+    "@types/uuid": "^3.0.0",
+    "aws-sdk": "^2.181.0",
+    "serverless": "^1.17.0",
+    "serverless-dynamodb-autoscaling": "^0.6.2",
+    "serverless-offline": "^3.15.0",
+    "serverless-webpack": "2.1.0",
+    "ts-loader": "^2.2.2",
+    "ts-node": "^3.2.0",
+    "tslint": "^5.3.2",
+    "tslint-config-airbnb": "^5.1.2",
+    "tslint-loader": "^3.5.2",
+    "typescript": "^2.4.1",
+    "webpack": "^3.0.0"
+  },
+  "dependencies": {
+    "@types/aws-lambda": "0.0.30",
+    "bluebird": "^3.5.0",
+    "debug": "^2.6.8",
+    "moment": "^2.13.0",
+    "uuid": "^3.1.0"
+  }
+}

@@ -1,0 +1,6 @@
+node_modules/
+.serverless/
+.webpack/
+.vscode/
+.idea
+yarn-error.log

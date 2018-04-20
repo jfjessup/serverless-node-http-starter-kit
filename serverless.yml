@@ -1,0 +1,93 @@
+service: widget-service
+
+plugins:
+#  - serverless-dynamodb-autoscaling
+  - serverless-webpack
+#  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  cfnRole: arn:aws:iam::${self:provider.accountVars.accountNumber}:role/cfnRole
+
+  accountVars: ${self:provider.accounts.${opt:acct}}
+  accounts:
+    <your-account-configs>:
+      accountNumber: ############
+
+  stageVars: ${self:provider.stages.${opt:stage}}
+  stages:
+    alpha:
+      debug: "*"
+    beta:
+      debug: "*"
+    prod:
+      debug: ""
+
+  environment:
+    ACCOUNT_NAME: ${opt:acct}
+    DEBUG: ${env:DEBUG, self:provider.accountVars.debug}
+    SERVERLESS_PROJECT: ${self:service}
+    SERVERLESS_REGION: ${opt:region}
+    SERVERLESS_STAGE: ${opt:stage}
+    WIDGETS_TABLE_NAME: widgets-${opt:stage}
+    USER_POOL_ARN: arn:aws:cognito-idp:us-east-1:${self:provider.accountVars.accountNumber}:userpool/${cf:user-service-${opt:stage}.CognitoPoolId}
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:GetItem
+        - dynamodb:DeleteItem
+      Resource:
+        - Fn::GetAtt: WidgetsDDTable.Arn
+
+functions:
+  trialCreate:
+    handler: lib/widgetCreate/handler.handle
+    events:
+      - http:
+          path: widget
+          method: post
+          cors: true
+          authorizer:
+            arn: ${self:provider.environment.USER_POOL_ARN}
+  widgetGet:
+    handler: lib/widgetGet/handler.handle
+    events:
+      - http:
+          path: widget/{widgetId}
+          method: get
+          cors: true
+          authorizer:
+            arn: ${self:provider.environment.USER_POOL_ARN}
+
+resources:
+  Resources:
+    WidgetsDDTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.WIDGETS_TABLE_NAME}
+        AttributeDefinitions:
+          - AttributeName: w_uuid
+            AttributeType: S
+        KeySchema:
+          - AttributeName: w_uuid
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+  Outputs:
+    WidgetsDDTableName:
+      Description: "Widgets DynamoDB Table Name"
+      Value:
+        Ref: WidgetsDDTable
+    WidgetsDDTableArn:
+      Description: "Widgets DynamoDB Table Resource Number (ARN)"
+      Value:
+        Fn::GetAtt:
+          - WidgetsDDTable
+          - Arn
